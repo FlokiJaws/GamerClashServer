@@ -23,11 +23,24 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Initialisation de Firebase Admin
-const serviceAccount = require("./firebase-service-account.json");
+let serviceAccount;
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    console.log("Utilisation des credentials Firebase depuis les variables d'environnement");
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } else {
+    console.log("Utilisation des credentials Firebase depuis le fichier local");
+    serviceAccount = require("./firebase-service-account.json");
+  }
 
-initializeApp({
-  credential: cert(serviceAccount),
-});
+  initializeApp({
+    credential: cert(serviceAccount),
+  });
+  
+  console.log("✅ Firebase initialisé avec succès");
+} catch (error) {
+  console.error("❌ Erreur lors de l'initialisation de Firebase:", error);
+}
 
 const db = getFirestore();
 
