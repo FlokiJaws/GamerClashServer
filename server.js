@@ -1,4 +1,3 @@
-// Charger les variables d'environnement en premier
 require("dotenv").config();
 
 // Log pour vérifier les variables d'environnement
@@ -10,9 +9,15 @@ console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Défini" : "Non défini");
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const nodemailer = require("nodemailer");
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
+const emailService = require("./services/emailService");
+const { formatDate } = require('./utils/dateFormatter');
+
+// Importation des routes
+const reviewNotificationsRoutes = require("./routes/reviewNotifications");
+const userNotificationsRoutes = require("./routes/userNotifications");
+// Importer d'autres routes au besoin
 
 // Initialiser Express
 const app = express();
@@ -33,71 +38,26 @@ try {
     serviceAccount = require("./firebase-service-account.json");
   }
 
-  initializeApp({
-    credential: cert(serviceAccount),
-  });
+  const { db } = require('./firebase/config');
   
   console.log("✅ Firebase initialisé avec succès");
 } catch (error) {
   console.error("❌ Erreur lors de l'initialisation de Firebase:", error);
 }
 
+// Initialisation de la base de données Firestore
 const db = getFirestore();
 
-// Configuration du transporteur d'email
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_SECURE === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
-
 // Vérifier la connexion au service d'emails
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Erreur de connexion au service d'email:", error);
-    console.error(
-      "Vérifiez vos paramètres EMAIL_HOST, EMAIL_PORT, EMAIL_USER et EMAIL_PASSWORD"
-    );
-  } else {
-    console.log("✅ Serveur prêt à envoyer des emails");
-    console.log(`📧 Utilisateur email configuré: ${process.env.EMAIL_USER}`);
-    console.log(
-      `🔌 Serveur SMTP: ${process.env.EMAIL_HOST}:${process.env.EMAIL_PORT}`
-    );
-  }
-});
-
-// Fonction pour formater la date en français
-// Fonction pour formater la date en français
-function formatDate(date) {
-  if (!date) return 'Date non disponible';
-  
-  // Si c'est un timestamp Firestore
-  if (date && date.seconds) {
-    date = new Date(date.seconds * 1000);
-  }
-  
-  // S'assurer que c'est un objet Date
-  if (!(date instanceof Date)) {
-    try {
-      date = new Date(date);
-    } catch (e) {
-      return 'Date invalide';
-    }
-  }
-  
-  return date.toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
+emailService.verifyConnection()
+  .then(() => {
+    console.log("Service d'emails vérifié avec succès");
+  })
+  .catch(error => {
+    console.error("Erreur lors de la vérification du service d'emails:", error);
   });
-}
 
-// Middleware d'authentification avec logs de débogage
+// Middleware global d'authentification
 const authenticateRequest = async (req, res, next) => {
   console.log("🔒 Tentative d'authentification d'une requête");
 
@@ -158,7 +118,7 @@ app.get("/api/test-email", async (req, res) => {
     });
 
     // Envoyer l'email
-    const info = await transporter.sendMail(mailOptions);
+    const info = await emailService.transporter.sendMail(mailOptions);
 
     console.log("Email de test envoyé:", info.messageId);
     res.status(200).json({ success: true, messageId: info.messageId });
@@ -167,6 +127,11 @@ app.get("/api/test-email", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// Enregistrement des routes
+app.use('/api/reviews', reviewNotificationsRoutes);
+app.use('/api/users', userNotificationsRoutes);
+
 
 // Route pour envoyer un email de notification de commande (version unique)
 // Mise à jour de la route notify-admin dans server.js pour inclure des boutons d'action
@@ -509,7 +474,7 @@ app.post("/api/notify-admin", authenticateRequest, async (req, res) => {
     });
 
     // Envoyer l'email
-    const info = await transporter.sendMail(mailOptions);
+    const info = await emailService.transporter.sendMail(mailOptions);
 
     // Mettre à jour la commande pour indiquer que l'email a été envoyé
     await db.collection("orders").doc(orderId).update({
@@ -529,8 +494,7 @@ app.post("/api/notify-admin", authenticateRequest, async (req, res) => {
 });
 
 // Route pour envoyer un email de notification de changement de statut
-app.post(
-  "/api/send-order-status-update",
+app.post("/api/send-order-status-update",
   authenticateRequest,
   async (req, res) => {
     try {
@@ -710,7 +674,7 @@ app.post(
       };
 
       // Envoyer l'email
-      const info = await transporter.sendMail(mailOptions);
+      const info = await emailService.transporter.sendMail(mailOptions);
 
       console.log("Email de mise à jour de statut envoyé:", info.messageId);
       res.status(200).json({ success: true, messageId: info.messageId });
@@ -770,7 +734,7 @@ app.post("/api/confirm-order", authenticateRequest, async (req, res) => {
         };
 
         // Envoyer l'email
-        await transporter.sendMail(mailOptions);
+        await emailService.transporter.sendMail(mailOptions);
         console.log("📧 Email de confirmation envoyé à l'utilisateur");
       }
     }
@@ -830,7 +794,7 @@ app.post("/api/cancel-order", authenticateRequest, async (req, res) => {
         };
 
         // Envoyer l'email
-        await transporter.sendMail(mailOptions);
+        await emailService.transporter.sendMail(mailOptions);
         console.log("📧 Email d'annulation envoyé à l'utilisateur");
       }
     }
@@ -1199,7 +1163,7 @@ app.post("/api/update-tracking", authenticateRequest, async (req, res) => {
         };
 
         // Envoyer l'email
-        await transporter.sendMail(mailOptions);
+        await emailService.transporter.sendMail(mailOptions);
         console.log("📧 Email d'expédition envoyé à l'utilisateur");
       }
     }
@@ -1355,7 +1319,7 @@ app.post("/api/send-order-confirmation", authenticateRequest, async (req, res) =
     console.log("📧 Envoi d'email de confirmation au client:", userEmail);
 
     // Envoyer l'email
-    const info = await transporter.sendMail(mailOptions);
+    const info = await emailService.transporter.sendMail(mailOptions);
 
     // Mettre à jour la commande pour indiquer que l'email a été envoyé
     await db.collection("orders").doc(orderId).update({
@@ -1443,7 +1407,7 @@ app.post("/api/send-status-update-to-customer", authenticateRequest, async (req,
     console.log(`📧 Envoi d'email de statut "${newStatus}" au client:`, userEmail);
 
     // Envoyer l'email
-    const info = await transporter.sendMail(mailOptions);
+    const info = await emailService.transporter.sendMail(mailOptions);
 
     // Mettre à jour la commande pour indiquer que l'email a été envoyé
     await db.collection("orders").doc(orderId).update({
