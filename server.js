@@ -17,6 +17,8 @@ const { formatDate } = require('./utils/dateFormatter');
 // Importation des routes
 const reviewNotificationsRoutes = require("./routes/reviewNotifications");
 const userNotificationsRoutes = require("./routes/userNotifications");
+const verificationRoutes = require("./routes/verificationRoutes");
+const registrationRoutes = require("./routes/registrationRoutes");
 // Importer d'autres routes au besoin
 
 // Initialiser Express
@@ -128,10 +130,84 @@ app.get("/api/test-email", async (req, res) => {
   }
 });
 
+// Route pour tester l'envoi d'un email de vérification
+app.get("/api/test-verification-email", authenticateRequest, async (req, res) => {
+  try {
+    console.log("Test d'envoi d'email de vérification");
+    
+    // Configuration de l'email pour le test
+    const verificationEmailService = require('./services/verificationEmailService');
+    const testCode = verificationEmailService.generateVerificationCode();
+    
+    const testUserData = {
+      displayName: "Utilisateur Test",
+      email: process.env.EMAIL_USER,
+      uid: "test-user-id"
+    };
+    
+    const emailContent = {
+      subject: `Test - Code de vérification: ${testCode}`,
+      html: `
+        <h1>Test d'email de vérification</h1>
+        <p>Ceci est un test. Votre code de vérification est: <strong>${testCode}</strong></p>
+      `
+    };
+    
+    // Envoyer l'email
+    const info = await emailService.transporter.sendMail({
+      from: `"GameCash Vérification" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: emailContent.subject,
+      html: emailContent.html
+    });
+    
+    console.log("Email de test de vérification envoyé:", info.messageId);
+    res.status(200).json({ 
+      success: true, 
+      messageId: info.messageId,
+      testCode: testCode
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email de test de vérification:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Route pour tester l'envoi d'un email de bienvenue
+app.get("/api/test-welcome-email", authenticateRequest, async (req, res) => {
+  try {
+    console.log("Test d'envoi d'email de bienvenue");
+    
+    const testUserData = {
+      displayName: "Utilisateur Test",
+      email: process.env.EMAIL_USER,
+      uid: "test-user-id"
+    };
+    
+    // Utiliser le service utilisateur existant
+    const userNotificationService = require('./services/userNotificationService');
+    const result = await userNotificationService.sendWelcomeEmail(testUserData);
+    
+    if (!result.success) {
+      return res.status(500).json({ success: false, error: result.error });
+    }
+    
+    console.log("Email de bienvenue de test envoyé");
+    res.status(200).json({ 
+      success: true, 
+      message: "Email de bienvenue envoyé"
+    });
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email de bienvenue de test:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Enregistrement des routes
 app.use('/api/reviews', reviewNotificationsRoutes);
 app.use('/api/users', userNotificationsRoutes);
-
+app.use('/api/verification', verificationRoutes);
+app.use('/api/registration', registrationRoutes);
 
 // Route pour envoyer un email de notification de commande (version unique)
 // Mise à jour de la route notify-admin dans server.js pour inclure des boutons d'action
@@ -806,7 +882,7 @@ app.post("/api/cancel-order", authenticateRequest, async (req, res) => {
   }
 });
 
-// Fonctions pour générer les templates d'email// Fonction pour générer le template d'email de confirmation de commande
+// Fonction pour générer le template d'email de confirmation de commande
 function generateOrderConfirmationEmail(orderData, userData) {
   // Utiliser displayId s'il existe, sinon utiliser id s'il existe, 
   // sinon utiliser une valeur par défaut
@@ -1175,7 +1251,6 @@ app.post("/api/update-tracking", authenticateRequest, async (req, res) => {
   }
 });
 
-// Fonction pour générer le template d'email d'expédition
 // Fonction pour générer le template d'email d'expédition
 function generateOrderShippedEmail(orderData, userData, trackingNumber = null) {
   // Vérifier et obtenir un ID sécurisé
@@ -1607,8 +1682,6 @@ function generateOrderStatusUpdateEmail(orderData, userData, status) {
   </html>
   `;
 }
-
-
 
 // Démarrer le serveur
 app.listen(PORT, () => {
