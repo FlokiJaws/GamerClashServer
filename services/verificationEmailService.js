@@ -132,8 +132,32 @@ async function verifyCode(userId, code) {
     const userRef = db.collection('users').doc(userId);
     await userRef.update({
       emailVerified: true,
-      emailVerifiedAt: now
+      emailVerifiedAt: now,
+      accountStatus: 'active'
     });
+    
+    // AJOUT: Envoi de l'email de confirmation directement depuis le service
+    try {
+      const userDoc = await userRef.get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        
+        // Générer et envoyer l'email de confirmation
+        const { generateAccountConfirmedEmail } = require('../emails/registrationTemplates');
+        const emailContent = generateAccountConfirmedEmail(userData);
+        
+        await emailService.sendEmail(
+          userData.email,
+          emailContent.subject,
+          emailContent.html
+        );
+        
+        console.log(`✅ Email de confirmation envoyé à ${userData.email}`);
+      }
+    } catch (emailError) {
+      console.error("❌ Erreur lors de l'envoi de l'email de confirmation:", emailError);
+      // On continue même si l'email échoue
+    }
     
     console.log(`✅ Email vérifié avec succès pour l'utilisateur ${userId}`);
     return { success: true, message: "Email vérifié avec succès" };

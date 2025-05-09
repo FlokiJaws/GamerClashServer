@@ -2,6 +2,7 @@
 const { db } = require('../firebase/config');
 const emailService = require('./emailService');
 const verificationEmailService = require('./verificationEmailService');
+const userNotificationService = require('./userNotificationService');
 const { generateAccountVerificationEmail, generateAccountConfirmedEmail } = require('../emails/registrationTemplates');
 
 /**
@@ -115,19 +116,27 @@ async function verifyUserAccount(userId, code) {
     
     const userData = userDoc.data();
     
-    // Envoyer un email de confirmation
+    // MODIFICATION: Envoyer la notification à l'administrateur après vérification
     try {
-      const emailContent = generateAccountConfirmedEmail(userData);
+      await userNotificationService.sendNewUserNotification(userData);
+      console.log(`✅ Notification admin envoyée après vérification pour ${userData.email}`);
+    } catch (adminNotifError) {
+      console.error("❌ Erreur lors de l'envoi de la notification à l'admin:", adminNotifError);
+      // On continue même si cette notification échoue
+    }
+    
+    // MODIFICATION: Envoyer un email de bienvenue à l'utilisateur
+    try {
+      await userNotificationService.sendWelcomeEmail(userData);
+      console.log(`✅ Email de bienvenue envoyé à ${userData.email}`);
       
-      await emailService.sendEmail(
-        userData.email,
-        emailContent.subject,
-        emailContent.html
-      );
-      
-      console.log(`✅ Email de confirmation envoyé à ${userData.email}`);
-    } catch (emailError) {
-      console.error("❌ Erreur lors de l'envoi de l'email de confirmation:", emailError);
+      // Marquer le welcome email comme envoyé
+      await userRef.update({
+        welcomeEmailSent: true,
+        welcomeEmailSentDate: new Date()
+      });
+    } catch (welcomeEmailError) {
+      console.error("❌ Erreur lors de l'envoi de l'email de bienvenue:", welcomeEmailError);
       // On continue même si l'envoi de l'email échoue
     }
     
@@ -179,7 +188,6 @@ async function sendWelcomeEmail(userId) {
     }
     
     // Utiliser le service existant pour envoyer l'email de bienvenue
-    const userNotificationService = require('./userNotificationService');
     const result = await userNotificationService.sendWelcomeEmail(userData);
     
     if (!result.success) {
