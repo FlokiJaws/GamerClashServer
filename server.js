@@ -19,6 +19,8 @@ const reviewNotificationsRoutes = require("./routes/reviewNotifications");
 const userNotificationsRoutes = require("./routes/userNotifications");
 const verificationRoutes = require("./routes/verificationRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
+const preRegistrationRoutes = require("./routes/preRegistrationRoutes");
+// Importer d'autres routes au besoin
 // Importer d'autres routes au besoin
 
 // Initialiser Express
