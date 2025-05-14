@@ -58,7 +58,7 @@ async function sendEmail(to, subject, html) {
     console.log(`📧 Préparation de l'envoi d'email à ${to}`);
     
     const mailOptions = {
-      from: `"GameCash" <${fromEmail}>`,
+      from: `"GamerClash" <${fromEmail}>`,
       to: to,
       subject: subject,
       html: html

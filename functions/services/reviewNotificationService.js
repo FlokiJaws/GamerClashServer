@@ -172,13 +172,13 @@ async function sendReviewUpdateNotification(reviewData, previousReview) {
 
     // Envoyer également un email de confirmation à l'utilisateur
     const userEmailContent = {
-      subject: "Votre avis a bien été modifié - GameCash",
+      subject: "Votre avis a bien été modifié - GamerClash",
       html: `
         <!DOCTYPE html>
         <html>
         <head>
           <meta charset="utf-8">
-          <title>Avis modifié - GameCash</title>
+          <title>Avis modifié - GamerClash</title>
           <style>
             body {
               font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -245,8 +245,8 @@ async function sendReviewUpdateNotification(reviewData, previousReview) {
             <p>Merci pour votre contribution !</p>
             
             <div class="footer">
-              <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-              <p>Ce message a été envoyé automatiquement par le système de notification de GameCash.</p>
+              <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+              <p>Ce message a été envoyé automatiquement par le système de notification de GamerClash.</p>
             </div>
           </div>
         </body>

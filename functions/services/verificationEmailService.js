@@ -214,13 +214,13 @@ async function resendVerificationEmail(userId) {
  */
 function generateVerificationEmailTemplate(userData, verificationCode) {
   return {
-    subject: `Vérifiez votre adresse email - GameCash`,
+    subject: `Vérifiez votre adresse email - GamerClash`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Vérification de votre adresse email - GameCash</title>
+      <title>Vérification de votre adresse email - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -297,7 +297,7 @@ function generateVerificationEmailTemplate(userData, verificationCode) {
         
         <div class="verification-info">
           <h2>Bonjour ${userData.displayName || "cher utilisateur"},</h2>
-          <p>Merci de vous être inscrit sur GameCash. Pour activer votre compte, veuillez saisir le code de vérification ci-dessous sur notre site.</p>
+          <p>Merci de vous être inscrit sur GamerClash. Pour activer votre compte, veuillez saisir le code de vérification ci-dessous sur notre site.</p>
         </div>
         
         <div class="verification-code">
@@ -307,7 +307,7 @@ function generateVerificationEmailTemplate(userData, verificationCode) {
         <div class="instructions">
           <h2>Comment vérifier votre compte ?</h2>
           <ol>
-            <li>Connectez-vous à votre compte GameCash</li>
+            <li>Connectez-vous à votre compte GamerClash</li>
             <li>Accédez à la page de vérification d'email</li>
             <li>Saisissez le code à 6 chiffres afficher ci-dessus</li>
             <li>Cliquez sur "Vérifier"</li>
@@ -316,12 +316,12 @@ function generateVerificationEmailTemplate(userData, verificationCode) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/verify-email" class="action-button">Vérifier mon email</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/verify-email" class="action-button">Vérifier mon email</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Si vous n'avez pas créé de compte sur GameCash, veuillez ignorer cet email.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Si vous n'avez pas créé de compte sur GamerClash, veuillez ignorer cet email.</p>
         </div>
       </div>
     </body>

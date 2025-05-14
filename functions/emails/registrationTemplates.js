@@ -9,13 +9,13 @@ const {formatDate} = require("../utils/dateFormatter");
  */
 function generateAccountVerificationEmail(userData, verificationCode) {
   return {
-    subject: `Confirmation de votre compte GameCash`,
+    subject: `Confirmation de votre compte GamerClash`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Confirmation de compte - GameCash</title>
+      <title>Confirmation de compte - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -95,13 +95,13 @@ function generateAccountVerificationEmail(userData, verificationCode) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Confirmation de votre compte GameCash</h1>
+          <h1>Confirmation de votre compte GamerClash</h1>
         </div>
         
         <div class="info-section">
-          <h2>Bienvenue sur GameCash !</h2>
+          <h2>Bienvenue sur GamerClash !</h2>
           <p>Bonjour ${userData.displayName || "cher utilisateur"},</p>
-          <p>Merci de vous être inscrit sur GameCash. Pour finaliser votre inscription et activer votre compte, veuillez saisir le code de vérification ci-dessous sur notre site.</p>
+          <p>Merci de vous être inscrit sur GamerClash. Pour finaliser votre inscription et activer votre compte, veuillez saisir le code de vérification ci-dessous sur notre site.</p>
         </div>
         
         <p style="text-align: center; font-weight: bold;">Votre code de vérification :</p>
@@ -112,7 +112,7 @@ function generateAccountVerificationEmail(userData, verificationCode) {
         <div class="instructions">
           <h2>Comment confirmer votre compte ?</h2>
           <ol>
-            <li>Retournez sur GameCash</li>
+            <li>Retournez sur GamerClash</li>
             <li>Accédez à la page de vérification de compte</li>
             <li>Saisissez le code de vérification à 6 chiffres ci-dessus</li>
             <li>Cliquez sur "Confirmer mon compte"</li>
@@ -121,16 +121,15 @@ function generateAccountVerificationEmail(userData, verificationCode) {
         
         <div class="warning">
           <p><strong>Important :</strong> Ce code expire dans 24 heures. Si vous n'avez pas confirmé votre compte avant l'expiration, vous devrez demander un nouveau code.</p>
-          <p>Si vous n'avez pas créé de compte sur GameCash, veuillez ignorer cet email.</p>
+          <p>Si vous n'avez pas créé de compte sur GamerClash, veuillez ignorer cet email.</p>
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/verify-account" class="action-button">Retourner sur GameCash</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/verify-account" class="action-button">Retourner sur GamerClash</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Si vous rencontrez des problèmes ou si vous avez des questions, n'hésitez pas à contacter notre support à <a href="mailto:support@gamecash.fr">support@gamecash.fr</a>.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
         </div>
       </div>
     </body>
@@ -146,13 +145,13 @@ function generateAccountVerificationEmail(userData, verificationCode) {
  */
 function generateAccountConfirmedEmail(userData) {
   return {
-    subject: `Compte GameCash activé avec succès`,
+    subject: `Compte GamerClash activé avec succès`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Compte activé - GameCash</title>
+      <title>Compte activé - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -238,7 +237,7 @@ function generateAccountConfirmedEmail(userData) {
         
         <div class="success-section">
           <h2>Félicitations, ${userData.displayName || "cher utilisateur"} !</h2>
-          <p>Votre adresse email a été vérifiée avec succès et votre compte GameCash est maintenant pleinement actif. Nous sommes ravis de vous compter parmi notre communauté !</p>
+          <p>Votre adresse email a été vérifiée avec succès et votre compte GamerClash est maintenant pleinement actif. Nous sommes ravis de vous compter parmi notre communauté !</p>
         </div>
         
         <div class="info-section">
@@ -251,7 +250,7 @@ function generateAccountConfirmedEmail(userData) {
         
         <div class="next-steps">
           <h2>Prochaines étapes</h2>
-          <p>Voici quelques suggestions pour bien démarrer sur GameCash :</p>
+          <p>Voici quelques suggestions pour bien démarrer sur GamerClash :</p>
           
           <div class="feature-grid">
             <div class="feature-item">
@@ -274,12 +273,12 @@ function generateAccountConfirmedEmail(userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}" class="action-button">Accéder à GameCash</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}" class="action-button">Accéder à GamerClash</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Si vous rencontrez des problèmes ou si vous avez des questions, n'hésitez pas à contacter notre support à <a href="mailto:support@gamecash.fr">support@gamecash.fr</a>.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Si vous rencontrez des problèmes ou si vous avez des questions, n'hésitez pas à contacter notre support à <a href="mailto:support@GamerClash.fr">support@GamerClash.fr</a>.</p>
         </div>
       </div>
     </body>

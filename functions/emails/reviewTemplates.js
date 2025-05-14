@@ -24,7 +24,7 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Nouvel avis - GameCash</title>
+      <title>Nouvel avis - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -88,7 +88,7 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
     <body>
       <div class="container">
         <div class="header">
-          <h1>Nouvel avis sur GameCash</h1>
+          <h1>Nouvel avis sur GamerClash</h1>
         </div>
         
         <div class="review-info">
@@ -114,12 +114,12 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Ce message a été envoyé automatiquement par le système de notification de GameCash.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Ce message a été envoyé automatiquement par le système de notification de GamerClash.</p>
         </div>
       </div>
     </body>
@@ -130,13 +130,13 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
 
 function generateReviewResponseEmail(reviewData, responseData, userData) {
   return {
-    subject: `Réponse à votre avis sur GameCash`,
+    subject: `Réponse à votre avis sur GamerClash`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Réponse à votre avis - GameCash</title>
+      <title>Réponse à votre avis - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -206,7 +206,7 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
         
         <p>Bonjour ${userData.displayName || "Cher client"},</p>
         
-        <p>L'équipe GameCash a répondu à votre avis. Voici les détails :</p>
+        <p>L'équipe GamerClash a répondu à votre avis. Voici les détails :</p>
         
         <div class="review-info">
           <h2>Votre avis</h2>
@@ -218,19 +218,19 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
         </div>
         
         <div class="response-info">
-          <h2>Réponse de l'équipe GameCash</h2>
+          <h2>Réponse de l'équipe GamerClash</h2>
           <p><strong>Date de réponse :</strong> ${formatDate(responseData.createdAt || new Date())}</p>
           <p><strong>Message :</strong></p>
           <p style="background-color: #fff; padding: 10px; border-radius: 5px; border-left: 3px solid #2196f3;">${responseData.comment}</p>
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/reviews" class="action-button">Voir tous les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/reviews" class="action-button">Voir tous les avis</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Ce message a été envoyé automatiquement par le système de notification de GameCash.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Ce message a été envoyé automatiquement par le système de notification de GamerClash.</p>
         </div>
       </div>
     </body>
@@ -241,13 +241,13 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
 
 function generateReviewUpdateEmail(reviewData, userData, previousReview) {
   return {
-    subject: `Modification d'un avis sur GameCash`,
+    subject: `Modification d'un avis sur GamerClash`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Avis modifié - GameCash</title>
+      <title>Avis modifié - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -318,10 +318,10 @@ function generateReviewUpdateEmail(reviewData, userData, previousReview) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Avis modifié sur GameCash</h1>
+          <h1>Avis modifié sur GamerClash</h1>
         </div>
         
-        <p>Un utilisateur a modifié son avis sur GameCash.</p>
+        <p>Un utilisateur a modifié son avis sur GamerClash.</p>
         
         <div class="review-info">
           <h2>Nouvel avis</h2>
@@ -348,12 +348,12 @@ function generateReviewUpdateEmail(reviewData, userData, previousReview) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Ce message a été envoyé automatiquement par le système de notification de GameCash.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Ce message a été envoyé automatiquement par le système de notification de GamerClash.</p>
         </div>
       </div>
     </body>

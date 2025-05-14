@@ -77,13 +77,13 @@ async function sendNewUserNotification(userData) {
 // Templates d'emails
 function generateNewUserWelcomeEmail(userData) {
   return {
-    subject: `Bienvenue sur GameCash !`,
+    subject: `Bienvenue sur GamerClash !`,
     html: `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Bienvenue sur GameCash</title>
+      <title>Bienvenue sur GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -157,12 +157,12 @@ function generateNewUserWelcomeEmail(userData) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Bienvenue sur GameCash !</h1>
+          <h1>Bienvenue sur GamerClash !</h1>
         </div>
         
         <div class="welcome-info">
           <h2>Bonjour ${userData.displayName || "cher utilisateur"},</h2>
-          <p>Nous sommes ravis de vous accueillir dans la communauté GameCash ! Votre compte a été créé avec succès et vous pouvez dès maintenant profiter de toutes les fonctionnalités de notre plateforme.</p>
+          <p>Nous sommes ravis de vous accueillir dans la communauté GamerClash ! Votre compte a été créé avec succès et vous pouvez dès maintenant profiter de toutes les fonctionnalités de notre plateforme.</p>
         </div>
         
         <div class="next-steps">
@@ -176,19 +176,19 @@ function generateNewUserWelcomeEmail(userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}" class="action-button">Commencer l'aventure</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}" class="action-button">Commencer l'aventure</a>
         </div>
         
         <div class="social-links">
           <p>Suivez-nous sur les réseaux sociaux :</p>
-          <a href="https://facebook.com/gamecash">Facebook</a> |
-          <a href="https://twitter.com/gamecash">Twitter</a> |
-          <a href="https://instagram.com/gamecash">Instagram</a>
+          <a href="https://facebook.com/GamerClash">Facebook</a> |
+          <a href="https://twitter.com/GamerClash">Twitter</a> |
+          <a href="https://instagram.com/GamerClash">Instagram</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Si vous n'êtes pas à l'origine de cette inscription, veuillez nous contacter immédiatement à <a href="mailto:support@gamecash.fr">support@gamecash.fr</a></p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Si vous n'êtes pas à l'origine de cette inscription, veuillez nous contacter immédiatement à <a href="mailto:support@GamerClash.fr">support@GamerClash.fr</a></p>
         </div>
       </div>
     </body>
@@ -205,7 +205,7 @@ function generateNewUserNotificationEmail(userData) {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Nouvel utilisateur inscrit - GameCash</title>
+      <title>Nouvel utilisateur inscrit - GamerClash</title>
       <style>
         body {
           font-family: 'Roboto', 'Segoe UI', sans-serif;
@@ -313,12 +313,12 @@ function generateNewUserNotificationEmail(userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/users?uid=${userData.uid}" class="action-button">Gérer l'utilisateur</a>
+          <a href="${process.env.WEBSITE_URL || "https://GamerClash.fr"}/admin/users?uid=${userData.uid}" class="action-button">Gérer l'utilisateur</a>
         </div>
         
         <div class="footer">
-          <p>© ${new Date().getFullYear()} GameCash - Tous droits réservés</p>
-          <p>Ce message a été envoyé automatiquement par le système de notification de GameCash.</p>
+          <p>© ${new Date().getFullYear()} GamerClash - Tous droits réservés</p>
+          <p>Ce message a été envoyé automatiquement par le système de notification de GamerClash.</p>
         </div>
       </div>
     </body>
