@@ -1,3 +1,4 @@
+// functions/index.js - Version corrigée
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const express = require('express');
@@ -27,13 +28,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Importer le middleware d'authentification
+const authenticateRequest = require('./middleware/auth');
+
 // Importer vos routes
 const reviewNotificationsRoutes = require('./routes/reviewNotifications');
 const userNotificationsRoutes = require('./routes/userNotifications');
 const verificationRoutes = require('./routes/verificationRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
 
-// Route pour la racine et health check
+// Route pour la racine et health check (sans auth)
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Firebase Functions Email Service is running!',
@@ -58,7 +62,7 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Routes de test
+// Routes de test (sans auth)
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Firebase Functions fonctionne!' });
 });
@@ -71,17 +75,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Enregistrer vos routes
+// Route de test d'authentification
+app.get('/api/test-auth', authenticateRequest, (req, res) => {
+  res.json({ 
+    message: 'Authentification réussie!',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Enregistrer vos routes (avec auth)
 app.use('/api/reviews', reviewNotificationsRoutes);
 app.use('/api/users', userNotificationsRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/registration', registrationRoutes);
 
-// Copier toutes les routes de server.js
-const { sendEmailApiRequest } = require('./utils/emailUtils');
+// Importer les utilitaires
+const { sendEmail } = require('./services/emailService');
 
 // Route pour notify-admin
-app.post("/api/notify-admin", async (req, res) => {
+app.post("/api/notify-admin", authenticateRequest, async (req, res) => {
   try {
     console.log("📧 Notification de commande reçue");
     const { orderId, userId } = req.body;
@@ -108,7 +120,7 @@ app.post("/api/notify-admin", async (req, res) => {
 
     const userData = userDoc.data();
 
-    // Générer l'email HTML (copier la logique depuis server.js)
+    // Générer l'email HTML
     const emailHtml = generateOrderNotificationEmail(orderData, userData, orderId);
 
     // Envoyer l'email
@@ -133,7 +145,7 @@ app.post("/api/notify-admin", async (req, res) => {
 });
 
 // Route pour send-order-confirmation
-app.post("/api/send-order-confirmation", async (req, res) => {
+app.post("/api/send-order-confirmation", authenticateRequest, async (req, res) => {
   try {
     const { orderId, userId } = req.body;
 
@@ -144,7 +156,6 @@ app.post("/api/send-order-confirmation", async (req, res) => {
       });
     }
 
-    // Logique similaire à notify-admin
     const orderDoc = await admin.firestore().collection("orders").doc(orderId).get();
     if (!orderDoc.exists) {
       return res.status(404).json({ success: false, error: "Commande non trouvée" });
@@ -181,28 +192,148 @@ app.post("/api/send-order-confirmation", async (req, res) => {
   }
 });
 
-// Fonction helper pour l'envoi d'emails
-async function sendEmail(to, subject, html) {
-  const emailService = require('./services/emailService');
-  return await emailService.sendEmail(to, subject, html);
-}
-
-// Fonctions pour générer les templates d'emails (copier depuis server.js)
+// Fonctions pour générer les templates d'emails
 function generateOrderNotificationEmail(orderData, userData, orderId) {
-  // Copier le template HTML depuis server.js
-  return `<!DOCTYPE html>... votre template HTML ...`;
+  const itemsList = orderData.items.map(item => `
+    <tr>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">${item.price.toFixed(2)} €</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(2)} €</td>
+    </tr>
+  `).join("");
+
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Nouvelle Commande - GameCash</title>
+    <style>
+      body {
+        font-family: 'Roboto', 'Segoe UI', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 4px solid #6200ea;
+      }
+      h1 {
+        color: #6200ea;
+        margin: 20px 0;
+      }
+      .order-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th {
+        background-color: #f0f0f0;
+        padding: 10px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Nouvelle Commande</h1>
+      </div>
+      
+      <div class="order-info">
+        <h2>Détails de la commande</h2>
+        <p><strong>Numéro de commande :</strong> ${orderId.substring(0, 8)}</p>
+        <p><strong>Client :</strong> ${userData.displayName || userData.email}</p>
+        <p><strong>Total :</strong> ${orderData.totalPrice.toFixed(2)} €</p>
+      </div>
+      
+      <h2>Articles commandés</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th style="text-align: center;">Quantité</th>
+            <th style="text-align: right;">Prix unitaire</th>
+            <th style="text-align: right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsList}
+        </tbody>
+        <tfoot>
+          <tr class="total">
+            <td colspan="3" style="text-align: right; padding: 10px; font-weight: bold;">Total</td>
+            <td style="text-align: right; padding: 10px; font-weight: bold;">${orderData.totalPrice.toFixed(2)} €</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </body>
+  </html>`;
 }
 
 function generateOrderConfirmationEmail(orderData, userData, orderId) {
-  // Copier le template HTML depuis server.js
-  return `<!DOCTYPE html>... votre template HTML ...`;
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Confirmation de commande - GameCash</title>
+    <style>
+      body {
+        font-family: 'Roboto', 'Segoe UI', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 4px solid #6200ea;
+      }
+      h1 {
+        color: #6200ea;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Confirmation de commande</h1>
+      </div>
+      <p>Bonjour ${userData.displayName || 'Cher client'},</p>
+      <p>Nous avons bien reçu votre commande n°${orderId.substring(0, 8)}.</p>
+      <p>Total: ${orderData.totalPrice.toFixed(2)} €</p>
+    </div>
+  </body>
+  </html>`;
 }
 
 // Exporter la fonction
-exports.emailService = functions
-  .region('europe-west1')
-  .runWith({
-    timeoutSeconds: 300,
-    memory: '512MB'
-  })
-  .https.onRequest(app);
+exports.emailService = functions.https.onRequest(app);

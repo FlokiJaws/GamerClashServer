@@ -1,30 +1,9 @@
+// functions/routes/reviewNotifications.js - Mise à jour avec nouveau middleware
 const express = require('express');
 const router = express.Router();
 const { db } = require('../firebase/config');
 const reviewNotificationService = require('../services/reviewNotificationService');
-
-// Middleware d'authentification
-const authenticateRequest = async (req, res, next) => {
-  console.log("🔒 Tentative d'authentification d'une requête");
-
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log("❌ En-tête d'autorisation manquant ou incorrect");
-    return res.status(401).json({ success: false, error: "Non autorisé" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  // Vérifier le token
-  if (token !== process.env.API_KEY) {
-    console.log("❌ Token invalide");
-    return res.status(401).json({ success: false, error: "Token invalide" });
-  }
-
-  console.log("✅ Authentification réussie");
-  next();
-};
+const authenticateRequest = require('../middleware/auth');
 
 // Route pour envoyer une notification pour un nouvel avis
 router.post('/notify-new-review', authenticateRequest, async (req, res) => {
