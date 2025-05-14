@@ -1,13 +1,25 @@
 const nodemailer = require('nodemailer');
+const functions = require('firebase-functions');
+
+// Configuration pour Firebase Functions
+const config = functions.config();
+
+// Pour le développement local
+const emailConfig = {
+  host: config.email?.host || process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: config.email?.port || process.env.EMAIL_PORT || 587,
+  user: config.email?.user || process.env.EMAIL_USER,
+  pass: config.email?.password || process.env.EMAIL_PASSWORD
+};
 
 // Configuration du transporteur d'email
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_SECURE === "true",
+  host: emailConfig.host,
+  port: emailConfig.port,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: emailConfig.user,
+    pass: emailConfig.pass,
   },
 });
 

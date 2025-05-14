@@ -1,0 +1,14 @@
+{
+    "email": {
+      "user": "contactgamerclash@gmail.com",
+      "password": "kisy agxq dguf pqzp",
+      "host": "smtp.gmail.com",
+      "port": "587"
+    },
+    "api": {
+      "key": "votre_cle_api_secrete"
+    },
+    "website": {
+      "url": "https://gamecash.vercel.app"
+    }
+  }
