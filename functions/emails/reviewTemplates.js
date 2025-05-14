@@ -1,24 +1,24 @@
-const { formatDate } = require('../utils/dateFormatter');
+const {formatDate} = require("../utils/dateFormatter");
 
 function generateReviewNotificationEmail(reviewData, userData, productData = null) {
-  const reviewType = reviewData.reviewType || 'global';
-  let subjectPrefix = '';
-  let productSection = '';
-  
-  if (reviewType === 'product' && productData) {
+  const reviewType = reviewData.reviewType || "global";
+  let subjectPrefix = "";
+  let productSection = "";
+
+  if (reviewType === "product" && productData) {
     subjectPrefix = `sur le produit ${productData.name} `;
     productSection = `
     <div class="product-info" style="margin-top: 15px; padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
       <h3 style="margin-top: 0;">Produit concerné</h3>
       <p><strong>Nom du produit :</strong> ${productData.name}</p>
-      <p><strong>Catégorie :</strong> ${productData.category || 'Non spécifiée'}</p>
+      <p><strong>Catégorie :</strong> ${productData.category || "Non spécifiée"}</p>
     </div>`;
-  } else if (reviewType === 'category') {
-    subjectPrefix = `sur la catégorie ${reviewData.categoryName || 'non spécifiée'} `;
+  } else if (reviewType === "category") {
+    subjectPrefix = `sur la catégorie ${reviewData.categoryName || "non spécifiée"} `;
   }
-  
+
   return {
-    subject: `Nouvel avis ${subjectPrefix}de ${userData.displayName || 'un utilisateur'}`,
+    subject: `Nouvel avis ${subjectPrefix}de ${userData.displayName || "un utilisateur"}`,
     html: `
     <!DOCTYPE html>
     <html>
@@ -93,14 +93,14 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
         
         <div class="review-info">
           <h2>Détails de l'avis</h2>
-          <p><strong>Note :</strong> <span class="rating">${'★'.repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? '½' : ''}${'☆'.repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
+          <p><strong>Note :</strong> <span class="rating">${"★".repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? "½" : ""}${"☆".repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
           <p><strong>Date :</strong> ${formatDate(reviewData.createdAt)}</p>
           <p><strong>Type d'avis :</strong> ${
-            reviewType === 'product' ? 'Produit' : 
-            reviewType === 'category' ? 'Catégorie' : 
-            'Site Global'
-          }</p>
-          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ''}
+            reviewType === "product" ? "Produit" :
+            reviewType === "category" ? "Catégorie" :
+            "Site Global"
+}</p>
+          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ""}
           <p><strong>Commentaire :</strong></p>
           <p style="background-color: #fff; padding: 10px; border-radius: 5px; border-left: 3px solid #6200ea;">${reviewData.comment}</p>
         </div>
@@ -109,12 +109,12 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
         
         <div class="user-info">
           <h2>Informations utilisateur</h2>
-          <p><strong>Nom :</strong> ${userData.displayName || 'Non spécifié'}</p>
+          <p><strong>Nom :</strong> ${userData.displayName || "Non spécifié"}</p>
           <p><strong>Email :</strong> ${userData.email}</p>
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}/admin/reviews" class="action-button">Gérer les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
         </div>
         
         <div class="footer">
@@ -124,7 +124,7 @@ function generateReviewNotificationEmail(reviewData, userData, productData = nul
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
@@ -204,15 +204,15 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
           <h1>Réponse à votre avis</h1>
         </div>
         
-        <p>Bonjour ${userData.displayName || 'Cher client'},</p>
+        <p>Bonjour ${userData.displayName || "Cher client"},</p>
         
         <p>L'équipe GameCash a répondu à votre avis. Voici les détails :</p>
         
         <div class="review-info">
           <h2>Votre avis</h2>
-          <p><strong>Note :</strong> <span class="rating">${'★'.repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? '½' : ''}${'☆'.repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
+          <p><strong>Note :</strong> <span class="rating">${"★".repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? "½" : ""}${"☆".repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
           <p><strong>Date :</strong> ${formatDate(reviewData.createdAt)}</p>
-          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ''}
+          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ""}
           <p><strong>Votre commentaire :</strong></p>
           <p style="background-color: #fff; padding: 10px; border-radius: 5px; border-left: 3px solid #6200ea;">${reviewData.comment}</p>
         </div>
@@ -225,7 +225,7 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}/reviews" class="action-button">Voir tous les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/reviews" class="action-button">Voir tous les avis</a>
         </div>
         
         <div class="footer">
@@ -235,7 +235,7 @@ function generateReviewResponseEmail(reviewData, responseData, userData) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
@@ -325,30 +325,30 @@ function generateReviewUpdateEmail(reviewData, userData, previousReview) {
         
         <div class="review-info">
           <h2>Nouvel avis</h2>
-          <p><strong>Note :</strong> <span class="rating">${'★'.repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? '½' : ''}${'☆'.repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
+          <p><strong>Note :</strong> <span class="rating">${"★".repeat(Math.floor(reviewData.rating))}${reviewData.rating % 1 >= 0.5 ? "½" : ""}${"☆".repeat(5 - Math.ceil(reviewData.rating))}</span> (${reviewData.rating}/5)</p>
           <p><strong>Date de modification :</strong> ${formatDate(new Date())}</p>
-          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ''}
+          ${reviewData.title ? `<p><strong>Titre :</strong> ${reviewData.title}</p>` : ""}
           <p><strong>Commentaire :</strong></p>
           <p style="background-color: #fff; padding: 10px; border-radius: 5px; border-left: 3px solid #6200ea;">${reviewData.comment}</p>
         </div>
         
         <div class="previous-review">
           <h2>Avis précédent</h2>
-          <p><strong>Note :</strong> <span class="rating">${'★'.repeat(Math.floor(previousReview.rating))}${previousReview.rating % 1 >= 0.5 ? '½' : ''}${'☆'.repeat(5 - Math.ceil(previousReview.rating))}</span> (${previousReview.rating}/5)</p>
+          <p><strong>Note :</strong> <span class="rating">${"★".repeat(Math.floor(previousReview.rating))}${previousReview.rating % 1 >= 0.5 ? "½" : ""}${"☆".repeat(5 - Math.ceil(previousReview.rating))}</span> (${previousReview.rating}/5)</p>
           <p><strong>Date de l'avis initial :</strong> ${formatDate(previousReview.createdAt)}</p>
-          ${previousReview.title ? `<p><strong>Titre :</strong> ${previousReview.title}</p>` : ''}
+          ${previousReview.title ? `<p><strong>Titre :</strong> ${previousReview.title}</p>` : ""}
           <p><strong>Commentaire :</strong></p>
           <p style="background-color: #fff; padding: 10px; border-radius: 5px; border-left: 3px solid #9e9e9e;">${previousReview.comment}</p>
         </div>
         
         <div class="user-info">
           <h2>Informations utilisateur</h2>
-          <p><strong>Nom :</strong> ${userData.displayName || 'Non spécifié'}</p>
+          <p><strong>Nom :</strong> ${userData.displayName || "Non spécifié"}</p>
           <p><strong>Email :</strong> ${userData.email}</p>
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}/admin/reviews" class="action-button">Gérer les avis</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/reviews" class="action-button">Gérer les avis</a>
         </div>
         
         <div class="footer">
@@ -358,12 +358,12 @@ function generateReviewUpdateEmail(reviewData, userData, previousReview) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
 module.exports = {
   generateReviewNotificationEmail,
   generateReviewResponseEmail,
-  generateReviewUpdateEmail
+  generateReviewUpdateEmail,
 };

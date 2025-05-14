@@ -1,5 +1,5 @@
-const { initializeApp, cert, getApps } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const {initializeApp, cert, getApps} = require("firebase-admin/app");
+const {getFirestore} = require("firebase-admin/firestore");
 
 // Initialisation de Firebase Admin
 let app;
@@ -20,7 +20,7 @@ try {
     app = initializeApp({
       credential: cert(serviceAccount),
     });
-    
+
     console.log("✅ Firebase initialisé avec succès dans le module");
   } else {
     console.log("✅ Utilisation de l'instance Firebase existante");
@@ -34,5 +34,5 @@ try {
 }
 
 module.exports = {
-  db
+  db,
 };

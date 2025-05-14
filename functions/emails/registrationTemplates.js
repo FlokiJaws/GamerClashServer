@@ -1,11 +1,11 @@
 // emails/registrationTemplates.js
-const { formatDate } = require('../utils/dateFormatter');
+const {formatDate} = require("../utils/dateFormatter");
 
 /**
  * Génère un email de confirmation de compte avec code de vérification
  * @param {Object} userData - Les données de l'utilisateur
  * @param {string} verificationCode - Le code de vérification
- * @returns {Object} - Contenu de l'email
+ * @return {Object} - Contenu de l'email
  */
 function generateAccountVerificationEmail(userData, verificationCode) {
   return {
@@ -100,7 +100,7 @@ function generateAccountVerificationEmail(userData, verificationCode) {
         
         <div class="info-section">
           <h2>Bienvenue sur GameCash !</h2>
-          <p>Bonjour ${userData.displayName || 'cher utilisateur'},</p>
+          <p>Bonjour ${userData.displayName || "cher utilisateur"},</p>
           <p>Merci de vous être inscrit sur GameCash. Pour finaliser votre inscription et activer votre compte, veuillez saisir le code de vérification ci-dessous sur notre site.</p>
         </div>
         
@@ -125,7 +125,7 @@ function generateAccountVerificationEmail(userData, verificationCode) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}/verify-account" class="action-button">Retourner sur GameCash</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/verify-account" class="action-button">Retourner sur GameCash</a>
         </div>
         
         <div class="footer">
@@ -135,14 +135,14 @@ function generateAccountVerificationEmail(userData, verificationCode) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
 /**
  * Génère un email de confirmation de compte réussie
  * @param {Object} userData - Les données de l'utilisateur
- * @returns {Object} - Contenu de l'email
+ * @return {Object} - Contenu de l'email
  */
 function generateAccountConfirmedEmail(userData) {
   return {
@@ -237,7 +237,7 @@ function generateAccountConfirmedEmail(userData) {
         </div>
         
         <div class="success-section">
-          <h2>Félicitations, ${userData.displayName || 'cher utilisateur'} !</h2>
+          <h2>Félicitations, ${userData.displayName || "cher utilisateur"} !</h2>
           <p>Votre adresse email a été vérifiée avec succès et votre compte GameCash est maintenant pleinement actif. Nous sommes ravis de vous compter parmi notre communauté !</p>
         </div>
         
@@ -274,7 +274,7 @@ function generateAccountConfirmedEmail(userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}" class="action-button">Accéder à GameCash</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}" class="action-button">Accéder à GameCash</a>
         </div>
         
         <div class="footer">
@@ -284,11 +284,11 @@ function generateAccountConfirmedEmail(userData) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
 module.exports = {
   generateAccountVerificationEmail,
-  generateAccountConfirmedEmail
+  generateAccountConfirmedEmail,
 };

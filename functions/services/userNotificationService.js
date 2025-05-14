@@ -1,6 +1,6 @@
 // services/userNotificationService.js
-const { db } = require('../firebase/config');
-const emailService = require('./emailService');
+const {db} = require("../firebase/config");
+const emailService = require("./emailService");
 
 /**
  * Envoie un email de bienvenue à un nouvel utilisateur
@@ -9,32 +9,32 @@ const emailService = require('./emailService');
 async function sendWelcomeEmail(userData) {
   try {
     console.log("📧 Envoi d'email de bienvenue au nouvel utilisateur");
-    
+
     if (!userData || !userData.email) {
       console.error("❌ Données manquantes: email utilisateur");
-      return { success: false, error: "Email utilisateur manquant" };
+      return {success: false, error: "Email utilisateur manquant"};
     }
-    
+
     // Générer le contenu de l'email
     const emailContent = generateNewUserWelcomeEmail(userData);
-    
+
     // Envoyer l'email à l'utilisateur
     const userResult = await emailService.sendEmail(
-      userData.email,
-      emailContent.subject,
-      emailContent.html
+        userData.email,
+        emailContent.subject,
+        emailContent.html,
     );
-    
+
     if (!userResult.success) {
       console.error("❌ Erreur lors de l'envoi de l'email de bienvenue:", userResult.error);
-      return { success: false, error: userResult.error };
+      return {success: false, error: userResult.error};
     }
-    
+
     console.log("✅ Email de bienvenue envoyé avec succès");
-    return { success: true };
+    return {success: true};
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi de l'email de bienvenue:", error);
-    return { success: false, error: error.message };
+    return {success: false, error: error.message};
   }
 }
 
@@ -45,32 +45,32 @@ async function sendWelcomeEmail(userData) {
 async function sendNewUserNotification(userData) {
   try {
     console.log("📧 Envoi de notification de nouvel utilisateur à l'admin");
-    
+
     if (!userData) {
       console.error("❌ Données utilisateur manquantes");
-      return { success: false, error: "Données utilisateur manquantes" };
+      return {success: false, error: "Données utilisateur manquantes"};
     }
-    
+
     // Générer le contenu de l'email
     const emailContent = generateNewUserNotificationEmail(userData);
-    
+
     // Envoyer l'email à l'administrateur
     const adminResult = await emailService.sendEmail(
-      process.env.EMAIL_USER, // Adresse admin
-      emailContent.subject,
-      emailContent.html
+        process.env.EMAIL_USER, // Adresse admin
+        emailContent.subject,
+        emailContent.html,
     );
-    
+
     if (!adminResult.success) {
       console.error("❌ Erreur lors de l'envoi de la notification à l'administrateur:", adminResult.error);
-      return { success: false, error: adminResult.error };
+      return {success: false, error: adminResult.error};
     }
-    
+
     console.log("✅ Notification de nouvel utilisateur envoyée avec succès");
-    return { success: true };
+    return {success: true};
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi de la notification à l'administrateur:", error);
-    return { success: false, error: error.message };
+    return {success: false, error: error.message};
   }
 }
 
@@ -161,7 +161,7 @@ function generateNewUserWelcomeEmail(userData) {
         </div>
         
         <div class="welcome-info">
-          <h2>Bonjour ${userData.displayName || 'cher utilisateur'},</h2>
+          <h2>Bonjour ${userData.displayName || "cher utilisateur"},</h2>
           <p>Nous sommes ravis de vous accueillir dans la communauté GameCash ! Votre compte a été créé avec succès et vous pouvez dès maintenant profiter de toutes les fonctionnalités de notre plateforme.</p>
         </div>
         
@@ -176,7 +176,7 @@ function generateNewUserWelcomeEmail(userData) {
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}" class="action-button">Commencer l'aventure</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}" class="action-button">Commencer l'aventure</a>
         </div>
         
         <div class="social-links">
@@ -193,7 +193,7 @@ function generateNewUserWelcomeEmail(userData) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
@@ -285,7 +285,7 @@ function generateNewUserNotificationEmail(userData) {
           <table>
             <tr>
               <td>Nom :</td>
-              <td>${userData.displayName || 'Non spécifié'}</td>
+              <td>${userData.displayName || "Non spécifié"}</td>
             </tr>
             <tr>
               <td>Email :</td>
@@ -297,23 +297,23 @@ function generateNewUserNotificationEmail(userData) {
             </tr>
             <tr>
               <td>Date d'inscription :</td>
-              <td>${new Date().toLocaleString('fr-FR')}</td>
+              <td>${new Date().toLocaleString("fr-FR")}</td>
             </tr>
             <tr>
               <td>Source :</td>
-              <td>${userData.providerData && userData.providerData[0] ? userData.providerData[0].providerId : 'Email/Mot de passe'}</td>
+              <td>${userData.providerData && userData.providerData[0] ? userData.providerData[0].providerId : "Email/Mot de passe"}</td>
             </tr>
           </table>
         </div>
         
         <div class="registration-details">
           <h2>Détails techniques</h2>
-          <p><strong>Adresse IP :</strong> ${userData.metadata ? userData.metadata.lastSignInIp || 'Non disponible' : 'Non disponible'}</p>
-          <p><strong>Appareil :</strong> ${userData.metadata ? userData.metadata.lastSignInUserAgent || 'Non disponible' : 'Non disponible'}</p>
+          <p><strong>Adresse IP :</strong> ${userData.metadata ? userData.metadata.lastSignInIp || "Non disponible" : "Non disponible"}</p>
+          <p><strong>Appareil :</strong> ${userData.metadata ? userData.metadata.lastSignInUserAgent || "Non disponible" : "Non disponible"}</p>
         </div>
         
         <div style="text-align: center; margin-top: 20px;">
-          <a href="${process.env.WEBSITE_URL || 'https://gamecash.fr'}/admin/users?uid=${userData.uid}" class="action-button">Gérer l'utilisateur</a>
+          <a href="${process.env.WEBSITE_URL || "https://gamecash.fr"}/admin/users?uid=${userData.uid}" class="action-button">Gérer l'utilisateur</a>
         </div>
         
         <div class="footer">
@@ -323,11 +323,11 @@ function generateNewUserNotificationEmail(userData) {
       </div>
     </body>
     </html>
-    `
+    `,
   };
 }
 
 module.exports = {
   sendWelcomeEmail,
-  sendNewUserNotification
+  sendNewUserNotification,
 };

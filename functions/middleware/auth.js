@@ -14,17 +14,29 @@ const authenticateRequest = async (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
   
-  // Récupérer l'API key de la configuration Firebase
-  const config = functions.config();
-  const expectedToken = config.api?.key || process.env.API_KEY;
+  // Récupérer l'API key de la configuration Firebase ou des variables d'environnement
+  let expectedToken;
+  
+  try {
+    // Dans un environnement Firebase Functions
+    const config = functions.config();
+    expectedToken = config.api && config.api.key ? config.api.key : undefined;
+    console.log("🔑 Configuration Firebase récupérée:", config.api ? "Oui" : "Non");
+  } catch (error) {
+    console.log("⚠️ Pas en environnement Firebase Functions, utilisation de process.env");
+  }
+  
+  // Fallback sur les variables d'environnement
+  if (!expectedToken) {
+    expectedToken = process.env.API_KEY;
+  }
   
   console.log("🔑 Token reçu:", token);
-  console.log("🔑 Token attendu (config):", config.api?.key);
-  console.log("🔑 Token attendu (env):", process.env.API_KEY);
+  console.log("🔑 Token attendu:", expectedToken ? "***" + expectedToken.slice(-4) : "Non configuré");
 
   // Vérifier le token
-  if (token !== expectedToken) {
-    console.log("❌ Token invalide");
+  if (!expectedToken || token !== expectedToken) {
+    console.log("❌ Token invalide ou non configuré");
     return res.status(401).json({ success: false, error: "Token invalide" });
   }
 

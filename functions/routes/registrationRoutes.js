@@ -1,8 +1,8 @@
 // routes/registrationRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const registrationService = require('../services/registrationService');
-const { db } = require('../firebase/config');
+const registrationService = require("../services/registrationService");
+const {db} = require("../firebase/config");
 
 // Middleware d'authentification
 const authenticateRequest = async (req, res, next) => {
@@ -12,7 +12,7 @@ const authenticateRequest = async (req, res, next) => {
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     console.log("❌ En-tête d'autorisation manquant ou incorrect");
-    return res.status(401).json({ success: false, error: "Non autorisé" });
+    return res.status(401).json({success: false, error: "Non autorisé"});
   }
 
   const token = authHeader.split(" ")[1];
@@ -20,7 +20,7 @@ const authenticateRequest = async (req, res, next) => {
   // Vérifier le token
   if (token !== process.env.API_KEY) {
     console.log("❌ Token invalide");
-    return res.status(401).json({ success: false, error: "Token invalide" });
+    return res.status(401).json({success: false, error: "Token invalide"});
   }
 
   console.log("✅ Authentification réussie");
@@ -28,16 +28,16 @@ const authenticateRequest = async (req, res, next) => {
 };
 
 // Route pour enregistrer un nouvel utilisateur
-router.post('/register', authenticateRequest, async (req, res) => {
+router.post("/register", authenticateRequest, async (req, res) => {
   try {
     console.log("👤 Requête d'enregistrement d'un nouvel utilisateur");
-    const { userData } = req.body;
+    const {userData} = req.body;
 
     if (!userData || !userData.email || !userData.uid) {
       console.error("❌ Données utilisateur incomplètes");
       return res.status(400).json({
         success: false,
-        error: "Données utilisateur incomplètes (email et uid requis)"
+        error: "Données utilisateur incomplètes (email et uid requis)",
       });
     }
 
@@ -46,9 +46,9 @@ router.post('/register', authenticateRequest, async (req, res) => {
 
     if (!result.success) {
       if (result.error === "Utilisateur déjà enregistré") {
-        return res.status(409).json({ success: false, error: result.error });
+        return res.status(409).json({success: false, error: result.error});
       }
-      return res.status(500).json({ success: false, error: result.error });
+      return res.status(500).json({success: false, error: result.error});
     }
 
     res.status(201).json({
@@ -56,25 +56,25 @@ router.post('/register', authenticateRequest, async (req, res) => {
       message: result.message,
       user: result.user,
       verificationStatus: result.verificationStatus,
-      expiresAt: result.expiresAt
+      expiresAt: result.expiresAt,
     });
   } catch (error) {
     console.error("❌ Erreur lors de l'enregistrement de l'utilisateur:", error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({success: false, error: error.message});
   }
 });
 
 // Route pour vérifier un compte utilisateur
-router.post('/verify-account', authenticateRequest, async (req, res) => {
+router.post("/verify-account", authenticateRequest, async (req, res) => {
   try {
     console.log("🔍 Requête de vérification de compte utilisateur");
-    const { userId, verificationCode } = req.body;
+    const {userId, verificationCode} = req.body;
 
     if (!userId || !verificationCode) {
       console.error("❌ ID utilisateur ou code de vérification manquant");
       return res.status(400).json({
         success: false,
-        error: "ID utilisateur et code de vérification requis"
+        error: "ID utilisateur et code de vérification requis",
       });
     }
 
@@ -82,31 +82,31 @@ router.post('/verify-account', authenticateRequest, async (req, res) => {
     const result = await registrationService.verifyUserAccount(userId, verificationCode);
 
     if (!result.success) {
-      return res.status(400).json({ success: false, error: result.error });
+      return res.status(400).json({success: false, error: result.error});
     }
 
     res.status(200).json({
       success: true,
       message: result.message,
-      user: result.user
+      user: result.user,
     });
   } catch (error) {
     console.error("❌ Erreur lors de la vérification du compte:", error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({success: false, error: error.message});
   }
 });
 
 // Route pour envoyer un email de bienvenue
-router.post('/send-welcome-email', authenticateRequest, async (req, res) => {
+router.post("/send-welcome-email", authenticateRequest, async (req, res) => {
   try {
     console.log("📧 Requête d'envoi d'email de bienvenue");
-    const { userId } = req.body;
+    const {userId} = req.body;
 
     if (!userId) {
       console.error("❌ ID utilisateur manquant");
       return res.status(400).json({
         success: false,
-        error: "ID utilisateur requis"
+        error: "ID utilisateur requis",
       });
     }
 
@@ -114,52 +114,52 @@ router.post('/send-welcome-email', authenticateRequest, async (req, res) => {
     const result = await registrationService.sendWelcomeEmail(userId);
 
     if (!result.success) {
-      return res.status(400).json({ success: false, error: result.error });
+      return res.status(400).json({success: false, error: result.error});
     }
 
     res.status(200).json({
       success: true,
-      message: "Email de bienvenue envoyé avec succès"
+      message: "Email de bienvenue envoyé avec succès",
     });
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi de l'email de bienvenue:", error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({success: false, error: error.message});
   }
 });
 
 // Route pour vérifier le statut d'enregistrement d'un utilisateur
-router.get('/status/:userId', authenticateRequest, async (req, res) => {
+router.get("/status/:userId", authenticateRequest, async (req, res) => {
   try {
     console.log("🔍 Requête de statut d'enregistrement d'un utilisateur");
-    const { userId } = req.params;
+    const {userId} = req.params;
 
     if (!userId) {
       console.error("❌ ID utilisateur manquant");
       return res.status(400).json({
         success: false,
-        error: "ID utilisateur requis"
+        error: "ID utilisateur requis",
       });
     }
 
     // Récupérer les données de l'utilisateur
     const userDoc = await db.collection("users").doc(userId).get();
     if (!userDoc.exists) {
-      return res.status(404).json({ success: false, error: "Utilisateur non trouvé" });
+      return res.status(404).json({success: false, error: "Utilisateur non trouvé"});
     }
 
     const userData = userDoc.data();
-    
+
     // Récupérer les données de vérification si elles existent
     let verificationData = null;
     const verificationDoc = await db.collection("emailVerifications").doc(userId).get();
-    
+
     if (verificationDoc.exists) {
       const rawData = verificationDoc.data();
       verificationData = {
         ...rawData,
         createdAt: rawData.createdAt.toDate(),
         expiresAt: rawData.expiresAt.toDate(),
-        verifiedAt: rawData.verifiedAt ? rawData.verifiedAt.toDate() : null
+        verifiedAt: rawData.verifiedAt ? rawData.verifiedAt.toDate() : null,
       };
     }
 
@@ -170,13 +170,13 @@ router.get('/status/:userId', authenticateRequest, async (req, res) => {
         createdAt: userData.createdAt ? userData.createdAt.toDate() : null,
         updatedAt: userData.updatedAt ? userData.updatedAt.toDate() : null,
         emailVerifiedAt: userData.emailVerifiedAt ? userData.emailVerifiedAt.toDate() : null,
-        welcomeEmailSentDate: userData.welcomeEmailSentDate ? userData.welcomeEmailSentDate.toDate() : null
+        welcomeEmailSentDate: userData.welcomeEmailSentDate ? userData.welcomeEmailSentDate.toDate() : null,
       },
-      verificationData: verificationData
+      verificationData: verificationData,
     });
   } catch (error) {
     console.error("❌ Erreur lors de la récupération du statut d'enregistrement:", error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({success: false, error: error.message});
   }
 });
 
