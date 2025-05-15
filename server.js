@@ -1684,6 +1684,236 @@ function generateOrderStatusUpdateEmail(orderData, userData, status) {
   `;
 }
 
+// Route pour gérer les emails de contact
+app.post("/api/contact/send", authenticateRequest, async (req, res) => {
+  try {
+    console.log("📧 Email de contact reçu");
+    const { contactData } = req.body;
+
+    if (!contactData || !contactData.name || !contactData.email || !contactData.subject || !contactData.message) {
+      console.error("❌ Données manquantes");
+      return res.status(400).json({
+        success: false,
+        error: "Tous les champs sont requis",
+      });
+    }
+
+    console.log(`📧 Nouveau message de contact de ${contactData.name}`);
+
+    // Template pour l'email administrateur
+    const adminEmailHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Nouveau message de contact - GameCash</title>
+      <style>
+        body {
+          font-family: 'Roboto', 'Segoe UI', sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background-color: #f8f9fa;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          text-align: center;
+          padding: 20px 0;
+          border-bottom: 4px solid #6200ea;
+        }
+        h1 {
+          color: #6200ea;
+          margin: 20px 0;
+        }
+        .info-box {
+          background: white;
+          padding: 20px;
+          margin: 15px 0;
+          border-radius: 8px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .label {
+          font-weight: bold;
+          color: #6200ea;
+          margin-bottom: 5px;
+        }
+        .message {
+          background: white;
+          padding: 20px;
+          margin: 20px 0;
+          border-left: 4px solid #6200ea;
+          border-radius: 5px;
+        }
+        .footer {
+          text-align: center;
+          color: #666;
+          font-size: 12px;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Nouveau message de contact</h1>
+          <p>Reçu le ${new Date(contactData.sentAt).toLocaleString('fr-FR')}</p>
+        </div>
+        
+        <div class="info-box">
+          <div class="label">Nom:</div>
+          <div>${contactData.name}</div>
+        </div>
+        
+        <div class="info-box">
+          <div class="label">Email:</div>
+          <div><a href="mailto:${contactData.email}">${contactData.email}</a></div>
+        </div>
+        
+        <div class="info-box">
+          <div class="label">Sujet:</div>
+          <div>${contactData.subject}</div>
+        </div>
+        
+        <div class="message">
+          <div class="label" style="margin-bottom: 10px;">Message:</div>
+          <div style="white-space: pre-wrap;">${contactData.message}</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="mailto:${contactData.email}?subject=Re: ${contactData.subject}" 
+             style="background: #6200ea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+            Répondre à ce message
+          </a>
+        </div>
+        
+        <div class="footer">
+          <p>Ce message a été envoyé depuis le formulaire de contact du site GamerClash.</p>
+          <p>© ${new Date().getFullYear()} GamerClash. Tous droits réservés.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    // Template pour l'email de confirmation utilisateur
+    const userEmailHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Confirmation de votre message - GameCash</title>
+      <style>
+        body {
+          font-family: 'Roboto', 'Segoe UI', sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background-color: #f8f9fa;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          background: linear-gradient(135deg, #6200ea, #03dac6);
+          color: white;
+          padding: 30px;
+          border-radius: 10px 10px 0 0;
+          text-align: center;
+        }
+        .content {
+          background: white;
+          padding: 30px;
+          border-radius: 0 0 10px 10px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .message-copy {
+          background: #f8f9fa;
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 8px;
+        }
+        .footer {
+          text-align: center;
+          color: #666;
+          font-size: 12px;
+          margin-top: 30px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0;">Merci de nous avoir contactés</h1>
+          <p style="margin: 10px 0 0 0;">Nous avons bien reçu votre message</p>
+        </div>
+        
+        <div class="content">
+          <p>Bonjour ${contactData.name},</p>
+          
+          <p>Nous vous confirmons la réception de votre message. Notre équipe vous répondra dans les plus brefs délais, généralement sous 24 à 48 heures ouvrables.</p>
+          
+          <div class="message-copy">
+            <h3 style="color: #6200ea; margin-top: 0;">Votre message:</h3>
+            <p><strong>Sujet:</strong> ${contactData.subject}</p>
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap;">${contactData.message}</p>
+          </div>
+          
+          <p>Si votre demande est urgente, vous pouvez également nous contacter par téléphone durant nos heures d'ouverture.</p>
+          
+          <p>Cordialement,<br>
+          L'équipe GamerClash</p>
+        </div>
+        
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} GamerClash. Tous droits réservés.</p>
+          <p>Ce message est automatique, merci de ne pas y répondre.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    // Envoyer l'email à l'administrateur
+    const adminMailOptions = {
+      from: `"GamerClash Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: `Nouveau message de contact: ${contactData.subject}`,
+      html: adminEmailHtml,
+    };
+
+    const adminInfo = await emailService.transporter.sendMail(adminMailOptions);
+    console.log("✅ Email envoyé à l'administrateur:", adminInfo.messageId);
+
+    // Envoyer l'email de confirmation à l'utilisateur
+    const userMailOptions = {
+      from: `"GamerClash" <${process.env.EMAIL_USER}>`,
+      to: contactData.email,
+      subject: "Confirmation de votre message - GamerClash",
+      html: userEmailHtml,
+    };
+
+    const userInfo = await emailService.transporter.sendMail(userMailOptions);
+    console.log("✅ Email de confirmation envoyé à l'utilisateur:", userInfo.messageId);
+
+  } catch (error) {
+    console.error("❌ Erreur lors de l'envoi des emails:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

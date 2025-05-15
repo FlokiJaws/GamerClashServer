@@ -36,6 +36,29 @@ const reviewNotificationsRoutes = require('./routes/reviewNotifications');
 const userNotificationsRoutes = require('./routes/userNotifications');
 const verificationRoutes = require('./routes/verificationRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
+// Import de la fonction contact
+const contactService = require('./services/contactService');
+
+// Route pour les emails de contact
+app.post("/api/contact/send", authenticateRequest, async (req, res) => {
+  try {
+    const { contactData } = req.body;
+    
+    if (!contactData || !contactData.name || !contactData.email || !contactData.subject || !contactData.message) {
+      return res.status(400).json({
+        success: false,
+        error: "Tous les champs sont requis"
+      });
+    }
+    
+    const result = await contactService.sendContactEmail(contactData);
+    
+    res.status(result.success ? 200 : 500).json(result);
+  } catch (error) {
+    console.error("❌ Erreur lors de l'envoi de l'email de contact:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Route pour la racine et health check (sans auth)
 app.get('/', (req, res) => {
